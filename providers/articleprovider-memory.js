@@ -4,7 +4,7 @@ ArticleProvider = function() {};
 ArticleProvider.prototype.dummyData = [];
 	
 ArticleProvider.prototype.findAll = function( callback ) {
-	callback( null, this.dummyData )
+	callback( null, this.dummyData );
 };
 
 ArticleProvider.prototype.FindById = function( id, callback ) {
@@ -22,12 +22,14 @@ ArticleProvider.prototype.FindById = function( id, callback ) {
 
 ArticleProvider.prototype.save = function( articles, callback ) {
 	var article = null;
-	
-	if( typeof( articles.length ) == "undefined" ) {
+	var j = 0;
+    var i = 0;
+
+    if( typeof( articles.length ) == "undefined" ) {
 		articles = [articles];
 	}
 	
-	for( var i = 0; i < articles.length; i++ ) {
+    for( ; i < articles.length; i++ ) {
 		article = articles[i];
 		article._id = articleCounter ++;
 		article.greated_at = new Date();
@@ -35,19 +37,18 @@ ArticleProvider.prototype.save = function( articles, callback ) {
 		if( article.comments === undefined ) {
 			article.comments = [];
 		}
-		
-		for( var j = 0; j < article.comments.length; j++ ) {
-			article.comments[j].created_at = new Date();
-		}
-		this.dummyData[this.dummyData.length] = article;
-	}
-	callback(null, articles);
-}
+        for( ; j < article.comments.length; j++ ) {
+            article.comments[j].created_at = new Date();
+        }
+        this.dummyData[this.dummyData.length] = article;
+    }
+    callback(null, articles);
+};
 
-new ArticleProvider().save([
-	{title: 'Post one', body: 'Body one', comments:[{author:'Bob', comment:'I love it'}, {author:'Dave', comment:'This is rubbish!'}]},
-	{title: 'Post two', body: 'Body two'},
-	{title: 'Post three', body: 'Body three'}
-], function(error, articles){});
-	
+var ap = new ArticleProvider().save([
+        {title: 'Post one', body: 'Body one', comments:[{author:'Bob', comment:'I love it'}, {author:'Dave', comment:'This is rubbish!'}]},
+        {title: 'Post two', body: 'Body two'},
+        {title: 'Post three', body: 'Body three'}
+        ], function(error, articles){});
+
 exports.ArticleProvider = ArticleProvider;

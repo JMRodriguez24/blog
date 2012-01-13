@@ -1,69 +1,71 @@
+'use strict';
+var dirname = __dirname;
 
 /**
  * Module dependencies.
  */
 
-var express = require('express')
-  , routes = require('./routes')
-  , PostProvider = require('./providers/articleprovider-mongodb').PostProvider;
-  
+var express = require('express'),
+    routes = require('./routes'),
+    PostProvider = require('./providers/articleprovider-mongodb').PostProvider;
+
 var app = module.exports = express.createServer();
 
 // Configuration
 
-app.configure(function(){
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'jade');
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(require('stylus').middleware({ src: __dirname + '/public' }));
-  app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
+app.configure(function () {
+    app.set('views', dirname + '/views');
+    app.set('view engine', 'jade');
+    app.use(express.bodyParser());
+    app.use(express.methodOverride());
+    app.use(require('stylus').middleware({ src: dirname + '/public' }));
+    app.use(app.router);
+    app.use(express.static(dirname + '/public'));
 });
 
-app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+app.configure('development', function () {
+    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+    app.use(express.errorHandler());
 });
 
-app.configure('production', function(){
-  app.use(express.errorHandler()); 
-});
-
-var PostProvider= new PostProvider();
+var PostProvider = new PostProvider();
 
 // Routes
 
-app.get('/', function(req, res) {
-	routes.index(req, res, PostProvider);
+app.get('/', function (req, res) {
+    console.log(req.params);
+    routes.index(req, res, PostProvider);
 });
 
-app.get('/blog/new', function(req, res) {
-	routes.new_get(req, res);
+app.get('/blog/new', function (req, res) {
+    routes.new_get(req, res);
 });
 
-app.post('/blog/new', function(req, res) {
-	routes.new_post(req, res, PostProvider);
+app.post('/blog/new', function (req, res) {
+    routes.new_post(req, res, PostProvider);
 });
 
-app.get('/blog/:id', function(req, res) {
-    PostProvider.findById(req.params.id, function(error, article) {
+app.get('/blog/:id', function (req, res) {
+    PostProvider.findById(req.params.id, function (error, article) {
         res.render('blog_show.jade',
-        { locals: {
-            title: article.title,
-            article:article
-        }
-        });
+            {
+                locals:
+                    {
+                        title: article.title,
+                        article: article
+                    }
+            });
     });
 });
 
-app.post('/blog/addComment', function(req, res) {
+app.post('/blog/addComment', function (req, res) {
     PostProvider.addCommentToArticle(req.param('_id'), {
         person: req.param('person'),
         comment: req.param('comment'),
         created_at: new Date()
-       } , function( error, docs) {
-           res.redirect('/blog/' + req.param('_id'))
-       });
+    }, function (error, docs) {
+        res.redirect('/blog/' + req.param('_id'));
+    });
 });
 
 app.listen(3000);

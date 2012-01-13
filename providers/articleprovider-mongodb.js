@@ -1,21 +1,21 @@
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/my_blog');
+mongoose.connect('mongodb://localhost:27017/test');
 
-var Schema = mongoose.Schema
-  , ObjectId = Schema.ObjectId;
+var Schema = mongoose.Schema,
+    ObjectId = Schema.ObjectId;
 
 var Comments = new Schema({
-    person     : String
-  , comment    : String
-  , created_at : Date
+    person     : String,
+    comment    : String,
+    created_at : Date
 });
 
 var Post = new Schema({
-    author      : ObjectId
-  , title       : String
-  , body        : String
-  , created_at  : Date
-  , comments    : [Comments]
+    author      : ObjectId,
+    title       : String,
+    body        : String,
+    created_at  : Date,
+    comments    : [Comments]
 });
 
 mongoose.model('Post', Post);
@@ -26,7 +26,7 @@ PostProvider = function(){};
 //Find all posts
 PostProvider.prototype.findAll = function(callback) {
   Post.find({}, function (err, posts) {
-    callback( null, posts )
+    callback( null, posts );
   });  
 };
 
@@ -54,7 +54,7 @@ PostProvider.prototype.updateById = function(id, body, callback) {
 
 //Create a new post
 PostProvider.prototype.save = function(params, callback) {
-  var post = new Post({title: params['title'], body: params['body'], created_at: new Date()});
+  var post = new Post({title: params.title, body: params.body, created_at: new Date()});
   post.save(function (err) {
     callback();
   });
@@ -64,7 +64,7 @@ PostProvider.prototype.save = function(params, callback) {
 PostProvider.prototype.addCommentToPost = function(postId, comment, callback) {
   this.findById(postId, function(error, post) {
     if(error){
-	  callback(error)
+	  callback(error);
 	}
     else {
 	  post.comments.push(comment);

@@ -1,4 +1,3 @@
-
 /*
  * GET new post page.
  */
@@ -20,7 +19,7 @@ exports.new_post = function(req, res) {
 			title: req.param('title'),
 			body: req.param('body')
 		}, function( error, docs)  {
-			res.redirect('/')
+			res.redirect('/');
 		});
 };
 
